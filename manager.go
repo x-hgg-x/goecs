@@ -1,5 +1,7 @@
 package ecs
 
+import "github.com/yourbasic/bit"
+
 // Manager manages components and entities
 type Manager struct {
 	currentEntityIndex int
@@ -34,4 +36,13 @@ func (manager *Manager) DeleteEntities(entities ...Entity) {
 	for _, entity := range entities {
 		manager.DeleteEntity(entity)
 	}
+}
+
+// DeleteAllEntities removes all entities for all components and reset current entity index
+func (manager *Manager) DeleteAllEntities() {
+	for _, component := range manager.components {
+		component.tag = bit.Set{}
+	}
+	// Reset current entity index
+	manager.currentEntityIndex = 0
 }
