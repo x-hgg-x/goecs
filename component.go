@@ -7,18 +7,6 @@ type component interface {
 	_Join(*bit.Set) *bit.Set
 }
 
-// Join returns tag describing intersection of components
-func Join(components ...component) *bit.Set {
-	tag := &bit.Set{}
-	if len(components) > 0 {
-		tag.Set(components[0]._Tag())
-		for _, component := range components[1:] {
-			tag = component._Join(tag)
-		}
-	}
-	return tag
-}
-
 // Component is a data storage
 type Component struct {
 	tag  bit.Set
@@ -31,6 +19,13 @@ func (c *Component) Get(entity Entity) interface{} {
 		return data
 	}
 	return nil
+}
+
+// Set sets data corresponding to entity, or does nothing if the entity does not have the component
+func (c *Component) Set(entity Entity, data interface{}) {
+	if entity.HasComponent(c) {
+		c.data[entity] = data
+	}
 }
 
 // Not returns an inverted component used for filtering entities that don't have the component

@@ -1,10 +1,3 @@
-# GoEcs
-
-An implementation of the ECS paradigm in Go.
-
-## Usage
-
-```go
 package main
 
 import (
@@ -116,4 +109,3 @@ func main() {
 	components.Value.Set(firstEntity, 4)
 	fmt.Println("New value:", components.Value.Get(firstEntity).(int))
 }
-```
