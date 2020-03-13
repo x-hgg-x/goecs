@@ -18,8 +18,8 @@ type testComponents struct {
 	c3 *Component
 }
 
-func setup() (Manager, testComponents) {
-	manager := Manager{}
+func setup() (*Manager, testComponents) {
+	manager := NewManager()
 
 	components := testComponents{
 		c1: manager.NewComponent(),
@@ -74,11 +74,20 @@ func TestJoin(t *testing.T) {
 func TestEntity(t *testing.T) {
 	m, c := setup()
 
+	if !m.entities.Equal(bit.New(1, 2, 3, 4, 5, 6, 7)) {
+		t.Errorf("Wrong data %v, wants %v", m.entities, bit.New(1, 2, 3, 4, 5, 6, 7))
+	}
 	if s1 := m.Join(c.c1).Size(); s1 != 4 {
 		t.Errorf("Wrong size %v, wants %v", s1, 4)
 	}
 	if s2 := m.Join(c.c2).Size(); s2 != 4 {
 		t.Errorf("Wrong size %v, wants %v", s2, 4)
+	}
+
+	Entity(3).RemoveComponent(c.c3)
+	Entity(7).RemoveComponent(c.c3)
+	if !m.entities.Equal(bit.New(1, 2, 4, 5, 6, 7)) {
+		t.Errorf("Wrong data %v, wants %v", m.entities, bit.New(1, 2, 4, 5, 6, 7))
 	}
 
 	m.DeleteEntities(4, 1)
@@ -88,6 +97,14 @@ func TestEntity(t *testing.T) {
 	}
 	if s2 := c.c2.tag.Size(); s2 != 3 {
 		t.Errorf("Wrong size %v, wants %v", s2, 3)
+	}
+	if !m.entities.Equal(bit.New(2, 5, 6, 7)) {
+		t.Errorf("Wrong data %v, wants %v", m.entities, bit.New(2, 5, 6, 7))
+	}
+
+	Entity(3).AddComponent(c.c3, 3)
+	if !m.entities.Equal(bit.New(2, 3, 5, 6, 7)) {
+		t.Errorf("Wrong data %v, wants %v", m.entities, bit.New(2, 3, 5, 6, 7))
 	}
 
 	m.DeleteAllEntities()
@@ -99,10 +116,16 @@ func TestEntity(t *testing.T) {
 		if component.data == nil || len(component.data) != 0 {
 			t.Errorf("Data is nil or not empty")
 		}
+		if component.manager != m {
+			t.Errorf("Manager is not set correctly")
+		}
 	}
 
 	if m.currentEntityIndex != 0 {
 		t.Errorf("Current entity index is not 0")
+	}
+	if !m.entities.Empty() {
+		t.Errorf("Entities cache is not empty")
 	}
 }
 

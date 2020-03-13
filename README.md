@@ -28,7 +28,7 @@ func main() {
 	}{}
 
 	// Initialize a new manager
-	manager := ecs.Manager{}
+	manager := ecs.NewManager()
 
 	// Create components
 	components.Shape = manager.NewComponent()

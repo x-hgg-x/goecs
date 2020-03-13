@@ -9,8 +9,9 @@ type component interface {
 
 // Component is a data storage
 type Component struct {
-	tag  bit.Set
-	data map[Entity]interface{}
+	tag     bit.Set
+	data    map[Entity]interface{}
+	manager *Manager
 }
 
 // Get returns data corresponding to entity
