@@ -13,18 +13,18 @@ type (
 )
 
 type testComponents struct {
-	c1 *Component
-	c2 *Component
-	c3 *Component
+	c1 *MapComponent
+	c2 *MapComponent
+	c3 *MapComponent
 }
 
 func setup() (*Manager, testComponents) {
 	manager := NewManager()
 
 	components := testComponents{
-		c1: manager.NewComponent(),
-		c2: manager.NewComponent(),
-		c3: manager.NewComponent(),
+		c1: manager.NewMapComponent(),
+		c2: manager.NewMapComponent(),
+		c3: manager.NewMapComponent(),
 	}
 
 	manager.NewEntity()
@@ -110,14 +110,19 @@ func TestEntity(t *testing.T) {
 	m.DeleteAllEntities()
 
 	for _, component := range m.components {
-		if !component.tag.Empty() {
+		if !component._Tag().Empty() {
 			t.Errorf("Component is not empty")
 		}
-		if component.data == nil || len(component.data) != 0 {
-			t.Errorf("Data is nil or not empty")
-		}
-		if component.manager != m {
+		if component._Manager() != m {
 			t.Errorf("Manager is not set correctly")
+		}
+		switch cc := component.(type) {
+		case *MapComponent:
+			if cc.data == nil || len(cc.data) != 0 {
+				t.Errorf("Map data is nil or not empty")
+			}
+		default:
+			t.Errorf("Unknown component type")
 		}
 	}
 
@@ -131,10 +136,6 @@ func TestEntity(t *testing.T) {
 
 func TestComponents(t *testing.T) {
 	_, c := setup()
-
-	if !c.c1._Tag().Equal(&c.c1.tag) || !c.c1.Not()._Tag().Equal(&c.c1.tag) {
-		t.Errorf("_Tag() method is incorrect")
-	}
 
 	if v := c.c1.Get(0); v != nil {
 		t.Errorf("Wrong data %v, wants %v", v, nil)

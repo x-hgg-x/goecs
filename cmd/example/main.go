@@ -14,20 +14,20 @@ func main() {
 
 	// Structure for storing components
 	components := struct {
-		Shape *ecs.Component
-		Color *ecs.Component
-		Name  *ecs.Component
-		Value *ecs.Component
+		Shape *ecs.MapComponent
+		Color *ecs.MapComponent
+		Name  *ecs.MapComponent
+		Value *ecs.MapComponent
 	}{}
 
 	// Initialize a new manager
 	manager := ecs.NewManager()
 
 	// Create components
-	components.Shape = manager.NewComponent()
-	components.Color = manager.NewComponent()
-	components.Name = manager.NewComponent()
-	components.Value = manager.NewComponent()
+	components.Shape = manager.NewMapComponent()
+	components.Color = manager.NewMapComponent()
+	components.Name = manager.NewMapComponent()
+	components.Value = manager.NewMapComponent()
 
 	// Create entities
 	manager.NewEntity().AddComponent(components.Shape, &Shape{"square"}).AddComponent(components.Color, &Color{"red"})
