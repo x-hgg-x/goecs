@@ -19,6 +19,13 @@ func (c *SliceComponent) Get(entity Entity) interface{} {
 
 // Set sets data corresponding to entity, or does nothing if the entity does not have the component
 func (c *SliceComponent) Set(entity Entity, data interface{}) {
+	// Check existing data
+	if 0 <= int(entity) && int(entity) < len(c.data) && c.data[entity] != nil {
+		c.data[entity] = data
+		return
+	}
+
+	// Insert data
 	if entity.HasComponent(c) {
 		deltaLen := int(entity) + 1 - len(c.data)
 		for iSlice := 0; iSlice < deltaLen; iSlice++ {

@@ -21,6 +21,13 @@ func (c *DenseSliceComponent) Get(entity Entity) interface{} {
 
 // Set sets data corresponding to entity, or does nothing if the entity does not have the component
 func (c *DenseSliceComponent) Set(entity Entity, data interface{}) {
+	// Check existing data
+	if 0 <= int(entity) && int(entity) < len(c.dataID) && c.dataID[entity] != -1 {
+		c.data[c.dataID[entity]] = data
+		return
+	}
+
+	// Insert data
 	if entity.HasComponent(c) {
 		deltaLen := int(entity) + 1 - len(c.dataID)
 		for iSlice := 0; iSlice < deltaLen; iSlice++ {

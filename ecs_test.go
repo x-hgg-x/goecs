@@ -270,7 +270,7 @@ func TestDenseSliceComponent(t *testing.T) {
 			dataID:   []int{2, -1, -1, -1, -1, 1, -1, 0, -1, -1, -1, -1},
 			entityID: []Entity{7, 5, 0},
 		}},
-		{"T5", func() { entities[9].AddComponent(c, 3) }, DenseSliceComponent{
+		{"T5", func() { entities[9].AddComponent(c, 33); c.Set(9, 3) }, DenseSliceComponent{
 			data:     []interface{}{0, 1, 2, 3},
 			dataID:   []int{2, -1, -1, -1, -1, 1, -1, 0, -1, 3, -1, -1},
 			entityID: []Entity{7, 5, 0, 9},
