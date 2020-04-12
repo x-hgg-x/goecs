@@ -2,7 +2,8 @@ package ecs
 
 import "github.com/yourbasic/bit"
 
-type dataComponent interface {
+// DataComponent is a component with data
+type DataComponent interface {
 	joinable
 	_Tag() *bit.Set
 	_Manager() *Manager

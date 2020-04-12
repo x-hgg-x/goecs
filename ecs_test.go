@@ -13,7 +13,7 @@ type (
 	data3 struct{ v int }
 )
 
-func setupNullComponent() (*Manager, dataComponent, dataComponent, dataComponent) {
+func setupNullComponent() (*Manager, DataComponent, DataComponent, DataComponent) {
 	manager := NewManager()
 	c1 := manager.NewNullComponent()
 	c2 := manager.NewNullComponent()
@@ -21,7 +21,7 @@ func setupNullComponent() (*Manager, dataComponent, dataComponent, dataComponent
 	return manager, c1, c2, c3
 }
 
-func setupSliceComponent() (*Manager, dataComponent, dataComponent, dataComponent) {
+func setupSliceComponent() (*Manager, DataComponent, DataComponent, DataComponent) {
 	manager := NewManager()
 	c1 := manager.NewSliceComponent()
 	c2 := manager.NewSliceComponent()
@@ -29,7 +29,7 @@ func setupSliceComponent() (*Manager, dataComponent, dataComponent, dataComponen
 	return manager, c1, c2, c3
 }
 
-func setupDenseSliceComponent() (*Manager, dataComponent, dataComponent, dataComponent) {
+func setupDenseSliceComponent() (*Manager, DataComponent, DataComponent, DataComponent) {
 	manager := NewManager()
 	c1 := manager.NewDenseSliceComponent()
 	c2 := manager.NewDenseSliceComponent()
@@ -37,7 +37,7 @@ func setupDenseSliceComponent() (*Manager, dataComponent, dataComponent, dataCom
 	return manager, c1, c2, c3
 }
 
-func setupMapComponent() (*Manager, dataComponent, dataComponent, dataComponent) {
+func setupMapComponent() (*Manager, DataComponent, DataComponent, DataComponent) {
 	manager := NewManager()
 	c1 := manager.NewMapComponent()
 	c2 := manager.NewMapComponent()
@@ -45,7 +45,7 @@ func setupMapComponent() (*Manager, dataComponent, dataComponent, dataComponent)
 	return manager, c1, c2, c3
 }
 
-func setup(manager *Manager, c1, c2, c3 dataComponent) {
+func setup(manager *Manager, c1, c2, c3 DataComponent) {
 	manager.NewEntity()
 
 	manager.NewEntity().AddComponent(c1, &data1{1})
@@ -61,8 +61,8 @@ func setup(manager *Manager, c1, c2, c3 dataComponent) {
 
 func TestAll(t *testing.T) {
 	var m *Manager
-	var c1, c2, c3 dataComponent
-	for _, fSetup := range []func() (*Manager, dataComponent, dataComponent, dataComponent){setupNullComponent, setupSliceComponent, setupDenseSliceComponent, setupMapComponent} {
+	var c1, c2, c3 DataComponent
+	for _, fSetup := range []func() (*Manager, DataComponent, DataComponent, DataComponent){setupNullComponent, setupSliceComponent, setupDenseSliceComponent, setupMapComponent} {
 		m, c1, c2, c3 = fSetup()
 		setup(m, c1, c2, c3)
 		testJoin(t, m, c1, c2, c3)
@@ -81,7 +81,7 @@ func TestAll(t *testing.T) {
 	}
 }
 
-func testJoin(t *testing.T, m *Manager, c1, c2, c3 dataComponent) {
+func testJoin(t *testing.T, m *Manager, c1, c2, c3 DataComponent) {
 	for _, x := range []struct {
 		test  string
 		tag   *bit.Set
@@ -108,7 +108,7 @@ func testJoin(t *testing.T, m *Manager, c1, c2, c3 dataComponent) {
 	}
 }
 
-func testEntity(t *testing.T, m *Manager, c1, c2, c3 dataComponent) {
+func testEntity(t *testing.T, m *Manager, c1, c2, c3 DataComponent) {
 	if !m.entities.Equal(bit.New(1, 2, 3, 4, 5, 6, 7)) {
 		t.Errorf("Wrong data %v, wants %v", m.entities, bit.New(1, 2, 3, 4, 5, 6, 7))
 	}
@@ -167,7 +167,7 @@ func testEntity(t *testing.T, m *Manager, c1, c2, c3 dataComponent) {
 	}
 }
 
-func testComponents(t *testing.T, m *Manager, c1, c2, c3 dataComponent) {
+func testComponents(t *testing.T, m *Manager, c1, c2, c3 DataComponent) {
 	_, null2 := c2.(*NullComponent)
 	_, null3 := c3.(*NullComponent)
 
@@ -212,7 +212,7 @@ func testComponents(t *testing.T, m *Manager, c1, c2, c3 dataComponent) {
 	c3.Set(99, nil)
 }
 
-func testUtils(t *testing.T, m *Manager, c1, c2, c3 dataComponent) {
+func testUtils(t *testing.T, m *Manager, c1, c2, c3 DataComponent) {
 	sum := 0
 	m.Join(c1).Visit(Visit(func(entity Entity) { sum++ }))
 	if sum != c1._Tag().Size() {
@@ -320,8 +320,8 @@ func checkDenseSliceInvariants(t *testing.T, c *DenseSliceComponent) {
 
 func TestMaintain(t *testing.T) {
 	var manager *Manager
-	var c1, c2, c3 dataComponent
-	for _, fSetup := range []func() (*Manager, dataComponent, dataComponent, dataComponent){setupSliceComponent, setupDenseSliceComponent, setupMapComponent} {
+	var c1, c2, c3 DataComponent
+	for _, fSetup := range []func() (*Manager, DataComponent, DataComponent, DataComponent){setupSliceComponent, setupDenseSliceComponent, setupMapComponent} {
 		manager, c1, c2, c3 = fSetup()
 		manager.Maintain(0, 1)
 

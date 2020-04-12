@@ -4,7 +4,7 @@ package ecs
 type Entity int
 
 // AddComponent adds entity for component
-func (entity Entity) AddComponent(component dataComponent, data interface{}) Entity {
+func (entity Entity) AddComponent(component DataComponent, data interface{}) Entity {
 	component._Tag().Add(int(entity))
 	component.Set(entity, data)
 	component._Manager().entities.Set(component._Manager().getEntities())
@@ -12,7 +12,7 @@ func (entity Entity) AddComponent(component dataComponent, data interface{}) Ent
 }
 
 // RemoveComponent removes entity for component
-func (entity Entity) RemoveComponent(component dataComponent) Entity {
+func (entity Entity) RemoveComponent(component DataComponent) Entity {
 	component._Tag().Delete(int(entity))
 	component._Remove(entity)
 	component._Manager().entities.Set(component._Manager().getEntities())
@@ -20,6 +20,6 @@ func (entity Entity) RemoveComponent(component dataComponent) Entity {
 }
 
 // HasComponent checks if component has entity
-func (entity Entity) HasComponent(component dataComponent) bool {
+func (entity Entity) HasComponent(component DataComponent) bool {
 	return component._Tag().Contains(int(entity))
 }

@@ -5,7 +5,7 @@ import "github.com/yourbasic/bit"
 // Manager manages components and entities
 type Manager struct {
 	currentEntityIndex int
-	components         []dataComponent
+	components         []DataComponent
 	entities           *bit.Set
 }
 
