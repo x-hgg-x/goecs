@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	ecs "github.com/x-hgg-x/goecs"
+	ecs "github.com/x-hgg-x/goecs/v2"
 )
 
 func main() {

@@ -1,4 +1,4 @@
-module github.com/x-hgg-x/goecs
+module github.com/x-hgg-x/goecs/v2
 
 go 1.14
 
