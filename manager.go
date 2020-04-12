@@ -84,11 +84,11 @@ func (manager *Manager) Join(components ...joinable) *bit.Set {
 }
 
 // Maintain reorders component storage to eliminate gaps and reduce memory usage
-func (manager *Manager) Maintain(minEntities int, maxGapRatio float64) {
+func (manager *Manager) Maintain(minEntities int, maxFillRatio float64) {
 	if manager.entities.Empty() {
 		return
 	}
-	if manager.currentEntityIndex < minEntities || float64(manager.entities.Size())/float64(manager.currentEntityIndex) > maxGapRatio {
+	if manager.currentEntityIndex < minEntities || float64(manager.entities.Size())/float64(manager.currentEntityIndex) > maxFillRatio {
 		return
 	}
 
