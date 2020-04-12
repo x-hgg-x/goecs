@@ -83,7 +83,8 @@ func (manager *Manager) Join(components ...joinable) *bit.Set {
 	return tag
 }
 
-// Maintain reorders component storage to eliminate gaps and reduce memory usage
+// Maintain reorders component storage to eliminate gaps and reduce memory usage.
+// It invalidates all previous entities.
 func (manager *Manager) Maintain(minEntities int, maxFillRatio float64) {
 	if manager.entities.Empty() {
 		return
