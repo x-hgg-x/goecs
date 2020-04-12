@@ -14,19 +14,19 @@ func BenchmarkSliceComponent(b *testing.B) {
 
 	b.Run("Get", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			c.Get(0)
+			c.Get(Entity(i % 10000))
 		}
 	})
 
 	b.Run("Set", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			c.Set(0, 2.0)
+			c.Set(Entity(i%10000), 2.0)
 		}
 	})
 
 	b.Run("Remove", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			c._Remove(0)
+			c._Remove(Entity(i % 10000))
 		}
 	})
 }
@@ -41,19 +41,19 @@ func BenchmarkDenseSliceComponent(b *testing.B) {
 
 	b.Run("Get", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			c.Get(0)
+			c.Get(Entity(i % 10000))
 		}
 	})
 
 	b.Run("Set", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			c.Set(0, 2.0)
+			c.Set(Entity(i%10000), 2.0)
 		}
 	})
 
 	b.Run("Remove", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			c._Remove(0)
+			c._Remove(Entity(i % 10000))
 		}
 	})
 }
@@ -68,19 +68,19 @@ func BenchmarkMapComponent(b *testing.B) {
 
 	b.Run("Get", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			c.Get(0)
+			c.Get(Entity(i % 10000))
 		}
 	})
 
 	b.Run("Set", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			c.Set(0, 2.0)
+			c.Set(Entity(i%10000), 2.0)
 		}
 	})
 
 	b.Run("Remove", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			c._Remove(0)
+			c._Remove(Entity(0))
 		}
 	})
 }
