@@ -83,6 +83,38 @@ func (manager *Manager) Join(components ...joinable) *bit.Set {
 	return tag
 }
 
+// Maintain reorders component storage to eliminate gaps and reduce memory usage
+func (manager *Manager) Maintain(minEntities int, maxGapRatio float64) {
+	if manager.entities.Empty() {
+		return
+	}
+	if manager.currentEntityIndex < minEntities || float64(manager.entities.Size())/float64(manager.currentEntityIndex) > maxGapRatio {
+		return
+	}
+
+	// Get entities without components
+	diffTag := bit.New().AddRange(0, manager.entities.Max()+1)
+	diffTag.SetXor(diffTag, manager.entities)
+
+	diffTag.Visit(func(n int) (skip bool) {
+		if n >= manager.entities.Max() {
+			return true
+		}
+
+		// Copy the components of the last entity to an empty entity, then delete the last entity
+		maxEntity := Entity(manager.entities.Max())
+		for _, component := range manager.components {
+			if maxEntity.HasComponent(component) {
+				Entity(n).AddComponent(component, component.Get(maxEntity))
+				maxEntity.RemoveComponent(component)
+			}
+		}
+		return false
+	})
+
+	manager.currentEntityIndex = manager.entities.Max() + 1
+}
+
 // Get all entities with at least one component
 func (manager *Manager) getEntities() *bit.Set {
 	tag := bit.New()

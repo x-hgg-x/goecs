@@ -18,7 +18,7 @@ func setupNullComponent() (*Manager, dataComponent, dataComponent, dataComponent
 	c1 := manager.NewNullComponent()
 	c2 := manager.NewNullComponent()
 	c3 := manager.NewNullComponent()
-	return setup(manager, c1, c2, c3)
+	return manager, c1, c2, c3
 }
 
 func setupSliceComponent() (*Manager, dataComponent, dataComponent, dataComponent) {
@@ -26,7 +26,7 @@ func setupSliceComponent() (*Manager, dataComponent, dataComponent, dataComponen
 	c1 := manager.NewSliceComponent()
 	c2 := manager.NewSliceComponent()
 	c3 := manager.NewSliceComponent()
-	return setup(manager, c1, c2, c3)
+	return manager, c1, c2, c3
 }
 
 func setupDenseSliceComponent() (*Manager, dataComponent, dataComponent, dataComponent) {
@@ -34,7 +34,7 @@ func setupDenseSliceComponent() (*Manager, dataComponent, dataComponent, dataCom
 	c1 := manager.NewDenseSliceComponent()
 	c2 := manager.NewDenseSliceComponent()
 	c3 := manager.NewDenseSliceComponent()
-	return setup(manager, c1, c2, c3)
+	return manager, c1, c2, c3
 }
 
 func setupMapComponent() (*Manager, dataComponent, dataComponent, dataComponent) {
@@ -42,10 +42,10 @@ func setupMapComponent() (*Manager, dataComponent, dataComponent, dataComponent)
 	c1 := manager.NewMapComponent()
 	c2 := manager.NewMapComponent()
 	c3 := manager.NewMapComponent()
-	return setup(manager, c1, c2, c3)
+	return manager, c1, c2, c3
 }
 
-func setup(manager *Manager, c1, c2, c3 dataComponent) (*Manager, dataComponent, dataComponent, dataComponent) {
+func setup(manager *Manager, c1, c2, c3 dataComponent) {
 	manager.NewEntity()
 
 	manager.NewEntity().AddComponent(c1, &data1{1})
@@ -57,8 +57,6 @@ func setup(manager *Manager, c1, c2, c3 dataComponent) (*Manager, dataComponent,
 	manager.NewEntity().AddComponent(c2, &data2{8}).AddComponent(c3, &data3{9})
 
 	manager.NewEntity().AddComponent(c1, &data1{10}).AddComponent(c2, &data2{11}).AddComponent(c3, &data3{12})
-
-	return manager, c1, c2, c3
 }
 
 func TestAll(t *testing.T) {
@@ -66,15 +64,19 @@ func TestAll(t *testing.T) {
 	var c1, c2, c3 dataComponent
 	for _, fSetup := range []func() (*Manager, dataComponent, dataComponent, dataComponent){setupNullComponent, setupSliceComponent, setupDenseSliceComponent, setupMapComponent} {
 		m, c1, c2, c3 = fSetup()
+		setup(m, c1, c2, c3)
 		testJoin(t, m, c1, c2, c3)
 
 		m, c1, c2, c3 = fSetup()
+		setup(m, c1, c2, c3)
 		testEntity(t, m, c1, c2, c3)
 
 		m, c1, c2, c3 = fSetup()
+		setup(m, c1, c2, c3)
 		testComponents(t, m, c1, c2, c3)
 
 		m, c1, c2, c3 = fSetup()
+		setup(m, c1, c2, c3)
 		testUtils(t, m, c1, c2, c3)
 	}
 }
@@ -313,5 +315,78 @@ func checkDenseSliceInvariants(t *testing.T, c *DenseSliceComponent) {
 		if c.dataID[iData] != -1 && int(c.entityID[c.dataID[iData]]) != iData {
 			t.Errorf("Wrong data %v, wants %v", c.entityID[c.dataID[iData]], iData)
 		}
+	}
+}
+
+func TestMaintain(t *testing.T) {
+	var manager *Manager
+	var c1, c2, c3 dataComponent
+	for _, fSetup := range []func() (*Manager, dataComponent, dataComponent, dataComponent){setupSliceComponent, setupDenseSliceComponent, setupMapComponent} {
+		manager, c1, c2, c3 = fSetup()
+		manager.Maintain(0, 1)
+
+		manager.NewEntity()
+		manager.NewEntity()
+
+		manager.NewEntity().AddComponent(c1, &data1{1})
+		manager.NewEntity()
+		manager.NewEntity()
+		manager.NewEntity().AddComponent(c2, &data2{2})
+		manager.NewEntity()
+		manager.NewEntity()
+		manager.NewEntity().AddComponent(c3, &data3{3})
+		manager.NewEntity()
+		manager.NewEntity()
+
+		manager.NewEntity().AddComponent(c1, &data1{4}).AddComponent(c2, &data2{5})
+		manager.NewEntity()
+		manager.NewEntity()
+		manager.NewEntity().AddComponent(c1, &data1{6}).AddComponent(c3, &data3{7})
+		manager.NewEntity()
+		manager.NewEntity()
+		manager.NewEntity().AddComponent(c2, &data2{8}).AddComponent(c3, &data3{9})
+		manager.NewEntity()
+		manager.NewEntity()
+
+		manager.NewEntity().AddComponent(c1, &data1{10}).AddComponent(c2, &data2{11}).AddComponent(c3, &data3{12})
+		manager.NewEntity()
+		manager.NewEntity()
+
+		manager.Maintain(0, 1)
+
+		manager.NewEntity().AddComponent(c1, &data1{13})
+
+		for _, x := range []struct {
+			test  string
+			data  int
+			value int
+		}{
+			{"T00", c1.Get(0).(*data1).v, 10},
+			{"T01", c2.Get(0).(*data2).v, 11},
+			{"T02", c3.Get(0).(*data3).v, 12},
+
+			{"T03", c2.Get(1).(*data2).v, 8},
+			{"T04", c3.Get(1).(*data3).v, 9},
+
+			{"T05", c1.Get(2).(*data1).v, 1},
+
+			{"T06", c1.Get(3).(*data1).v, 6},
+			{"T07", c3.Get(3).(*data3).v, 7},
+
+			{"T08", c1.Get(4).(*data1).v, 4},
+			{"T09", c2.Get(4).(*data2).v, 5},
+
+			{"T10", c2.Get(5).(*data2).v, 2},
+
+			{"T11", c3.Get(6).(*data3).v, 3},
+
+			{"T12", c1.Get(7).(*data1).v, 13},
+		} {
+			if x.data != x.value {
+				t.Errorf("Test %v: Wrong data %v, wants %v", x.test, x.data, x.value)
+			}
+		}
+
+		manager.Maintain(0, 0)
 	}
 }
