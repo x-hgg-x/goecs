@@ -2,7 +2,8 @@ package ecs
 
 import "github.com/yourbasic/bit"
 
-// MapComponent is a data storage
+// MapComponent uses a map for storing data.
+// Useful for rarely used components.
 type MapComponent struct {
 	component
 	data map[Entity]interface{}

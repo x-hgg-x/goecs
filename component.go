@@ -3,6 +3,7 @@ package ecs
 import "github.com/yourbasic/bit"
 
 type dataComponent interface {
+	joinable
 	_Tag() *bit.Set
 	_Manager() *Manager
 	_Reset()

@@ -14,6 +14,27 @@ func NewManager() *Manager {
 	return &Manager{entities: bit.New()}
 }
 
+// NewNullComponent creates a new NullComponent
+func (manager *Manager) NewNullComponent() *NullComponent {
+	component := &NullComponent{component: component{manager: manager}}
+	manager.components = append(manager.components, component)
+	return component
+}
+
+// NewSliceComponent creates a new SliceComponent
+func (manager *Manager) NewSliceComponent() *SliceComponent {
+	component := &SliceComponent{component: component{manager: manager}}
+	manager.components = append(manager.components, component)
+	return component
+}
+
+// NewDenseSliceComponent creates a new DenseSliceComponent
+func (manager *Manager) NewDenseSliceComponent() *DenseSliceComponent {
+	component := &DenseSliceComponent{component: component{manager: manager}}
+	manager.components = append(manager.components, component)
+	return component
+}
+
 // NewMapComponent creates a new MapComponent
 func (manager *Manager) NewMapComponent() *MapComponent {
 	component := &MapComponent{data: make(map[Entity]interface{}), component: component{manager: manager}}

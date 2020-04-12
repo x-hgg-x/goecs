@@ -13,31 +13,35 @@ func main() {
 	type Name struct{ name string }
 
 	// Structure for storing components
+	// Several storage types are possible
 	components := struct {
-		Shape *ecs.MapComponent
-		Color *ecs.MapComponent
+		Flag  *ecs.NullComponent
+		Shape *ecs.SliceComponent
+		Color *ecs.DenseSliceComponent
 		Name  *ecs.MapComponent
-		Value *ecs.MapComponent
+		Value *ecs.SliceComponent
 	}{}
 
 	// Initialize a new manager
 	manager := ecs.NewManager()
 
 	// Create components
-	components.Shape = manager.NewMapComponent()
-	components.Color = manager.NewMapComponent()
+	components.Flag = manager.NewNullComponent()
+	components.Shape = manager.NewSliceComponent()
+	components.Color = manager.NewDenseSliceComponent()
 	components.Name = manager.NewMapComponent()
-	components.Value = manager.NewMapComponent()
+	components.Value = manager.NewSliceComponent()
 
 	// Create entities
 	manager.NewEntity().AddComponent(components.Shape, &Shape{"square"}).AddComponent(components.Color, &Color{"red"})
-	manager.NewEntity().AddComponent(components.Shape, &Shape{"circle"}).AddComponent(components.Name, &Name{"tom"})
+	manager.NewEntity().AddComponent(components.Shape, &Shape{"circle"}).AddComponent(components.Name, &Name{"tom"}).AddComponent(components.Flag, nil)
 	manager.NewEntity().AddComponent(components.Color, &Color{"blue"}).AddComponent(components.Name, &Name{"john"})
 
 	manager.NewEntity().
 		AddComponent(components.Shape, &Shape{"triangle"}).
 		AddComponent(components.Color, &Color{"green"}).
-		AddComponent(components.Name, &Name{"paul"})
+		AddComponent(components.Name, &Name{"paul"}).
+		AddComponent(components.Flag, nil)
 
 	// Loop on entities which have specified components
 	// The Join() method gives a bit.Set tag containing integers which can be converted to entities,
@@ -74,8 +78,11 @@ func main() {
 	fmt.Println()
 
 	// The Not() method is used when we want to exclude a particular component
-	manager.Join(components.Shape.Not()).Visit(ecs.Visit(func(entity ecs.Entity) {
+	manager.Join(components.Flag.Not()).Visit(ecs.Visit(func(entity ecs.Entity) {
 		fmt.Printf("Entity components: ")
+		if entity.HasComponent(components.Shape) {
+			fmt.Printf("Shape: '%s', ", components.Shape.Get(entity).(*Shape).shape)
+		}
 		if entity.HasComponent(components.Color) {
 			fmt.Printf("Color: '%s', ", components.Color.Get(entity).(*Color).color)
 		}
