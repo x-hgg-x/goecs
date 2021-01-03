@@ -1,8 +1,6 @@
 package ecs
 
-import (
-	"testing"
-)
+import "testing"
 
 func BenchmarkSliceComponent(b *testing.B) {
 	manager := NewManager()
